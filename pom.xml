@@ -1,19 +1,52 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
+    <parent>
+        <groupId>org.sonatype.oss</groupId>
+        <artifactId>oss-parent</artifactId>
+        <version>7</version>
+    </parent>
+
+    <!-- Maven deploy guide: https://docs.sonatype.org/display/Repository/Sonatype+OSS+Maven+Repository+Usage+Guide -->
+
     <groupId>org.vertx</groupId>
     <artifactId>vertx-maven-plugin</artifactId>
     <packaging>maven-plugin</packaging>
 
-    <version>1.2.4-SNAPSHOT</version>
+    <version>1.2.3.1-SNAPSHOT</version>
 
     <name>vertx-maven-plugin</name>
+    <description>Maven plugin for running Vert.X verticles and modules</description>
     <url>https://github.com/rhart/vertx-maven-plugin</url>
+
+    <licenses>
+        <license>
+            <name>The Apache Software License, Version 2.0</name>
+            <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+            <distribution>repo</distribution>
+        </license>
+    </licenses>
+
+    <developers>
+        <developer>
+            <id>rhart</id>
+            <name>Rhart</name>
+            <email>russellxhart@googlemail.com</email>
+            <roles>
+                <role>Main developer</role>
+            </roles>
+        </developer>
+    </developers>
+
+    <scm>
+        <url>git@github.com:rhart/vertx-maven-plugin.git</url>
+        <connection>scm:git:git://github.com/rhart/vertx-maven-plugin.git</connection>
+        <developerConnection>scm:git:git://github.com/rhart/vertx-maven-plugin.git</developerConnection>
+    </scm>
 
     <properties>
         <maven.version>2.2.1</maven.version>
         <vertx.version>1.2.3.final</vertx.version>
-        <nexus.url>http://dev.jurahungaria.com:8081</nexus.url>
     </properties>
 
     <build>
@@ -37,7 +70,6 @@
                     <pushChanges>false</pushChanges>
                 </configuration>
             </plugin>
-            
         </plugins>
     </build>
 
@@ -81,27 +113,35 @@
         </dependency>
        
     </dependencies>
-    
-    <scm>
-        <connection>scm:git:file://${basedir}</connection>
-        <developerConnection>scm:git:file://${basedir}</developerConnection>
-    </scm>
-    
-    <distributionManagement>
-        <repository>
-            <uniqueVersion>false</uniqueVersion>
-            <id>releases</id>
-            <name>JURA releases repo</name>
-            <url>${nexus.url}/nexus/content/repositories/releases/</url>
-            <layout>default</layout>
-        </repository>
-        <snapshotRepository>
-            <uniqueVersion>true</uniqueVersion>
-            <id>snapshots</id>
-            <name>JURA snapshots repo</name>
-            <url>${nexus.url}/nexus/content/repositories/snapshots/</url>
-            <layout>default</layout>
-        </snapshotRepository>
-    </distributionManagement>
-    
+
+    <profiles>
+        <profile>
+            <id>release-sign-artifacts</id>
+            <activation>
+                <property>
+                    <name>performRelease</name>
+                    <value>true</value>
+                </property>
+            </activation>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-gpg-plugin</artifactId>
+                        <version>1.4</version>
+                        <executions>
+                            <execution>
+                                <id>sign-artifacts</id>
+                                <phase>verify</phase>
+                                <goals>
+                                    <goal>sign</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
+
 </project>
